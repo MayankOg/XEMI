@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>XEMI – The Intelligent Platform for Global Trade</title>
+<style>
+  /* ─── RESET & BASE ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --white: #ffffff;
+    --off-white: #f8f9fb;
+    --bg-light: #f2f4f8;
+    --border: #e4e7ee;
+    --text-primary: #0f1a2e;
+    --text-secondary: #4a5568;
+    --text-muted: #8a94a6;
+    --accent: #1a56db;
+    --accent-hover: #1447c0;
+    --accent-light: #ebf0fd;
+    --accent-subtle: #d4e0fb;
+    --green: #0d8a5e;
+    --green-light: #e6f7f2;
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --shadow-xs: 0 1px 3px rgba(15,26,46,.07);
+    --shadow-sm: 0 4px 16px rgba(15,26,46,.08);
+    --shadow-md: 0 8px 32px rgba(15,26,46,.10);
+    --shadow-lg: 0 16px 48px rgba(15,26,46,.12);
+    --font: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --transition: 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font); background: var(--white); color: var(--text-primary); line-height: 1.65; overflow-x: hidden; }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+
+  /* ─── TYPOGRAPHY ─── */
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent); background: var(--accent-light); border: 1px solid var(--accent-subtle);
+    padding: 5px 14px; border-radius: 100px;
+  }
+  h1 { font-size: clamp(2rem, 4.5vw, 3.5rem); font-weight: 800; line-height: 1.12; letter-spacing: -.02em; }
+  h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 700; line-height: 1.2; letter-spacing: -.015em; }
+  h3 { font-size: 1.15rem; font-weight: 600; }
+  p { color: var(--text-secondary); }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 14px; font-weight: 600; border-radius: var(--radius-sm);
+    padding: 11px 22px; border: none; cursor: pointer; transition: var(--transition);
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(26,86,219,.3); }
+  .btn-secondary { background: var(--white); color: var(--text-primary); border: 1.5px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--accent); padding: 0; font-size: 14px; font-weight: 600; }
+  .btn-ghost:hover { gap: 10px; }
+  .btn-ghost .arrow { transition: transform .25s; }
+  .btn-ghost:hover .arrow { transform: translateX(4px); }
+
+  /* ─── NAVBAR ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%; height: 64px;
+    background: rgba(255,255,255,.92); backdrop-filter: blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color .3s, box-shadow .3s;
+  }
+  nav.scrolled { border-color: var(--border); box-shadow: var(--shadow-xs); }
+  .nav-logo { font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -.03em; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { font-size: 14px; font-weight: 500; color: var(--text-secondary); transition: color .2s; }
+  .nav-links a:hover { color: var(--text-primary); }
+  .nav-actions { display: flex; gap: 10px; }
+
+  /* ─── SECTION WRAPPER ─── */
+  section { padding: 96px 5%; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .section-header { text-align: center; max-width: 680px; margin: 0 auto 64px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .section-header p { font-size: 1.05rem; }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh; display: flex; align-items: center;
+    padding-top: 100px; padding-bottom: 80px;
+    background: linear-gradient(160deg, var(--white) 0%, var(--off-white) 60%, #eaf0fd 100%);
+    position: relative; overflow: hidden;
+  }
+  #hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 80% 50%, rgba(26,86,219,.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .hero-left { display: flex; flex-direction: column; gap: 24px; }
+  .hero-left h1 { max-width: 560px; }
+  .hero-left .sub { font-size: 1.05rem; max-width: 500px; line-height: 1.75; }
+  .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-right { position: relative; }
+  .hero-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 28px; box-shadow: var(--shadow-lg);
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .hero-card-header { display: flex; align-items: center; gap: 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-green { background: #34d399; } .dot-yellow { background: #fbbf24; } .dot-red { background: #f87171; }
+  .metric-row { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
+  .metric-item {
+    background: var(--off-white); border: 1px solid var(--border); border-radius: var(--radius-md);
+    padding: 16px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .metric-value { font-size: 1.5rem; font-weight: 800; color: var(--text-primary); }
+  .metric-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .metric-badge { font-size: 11px; font-weight: 700; color: var(--green); background: var(--green-light); padding: 2px 8px; border-radius: 100px; width: fit-content; }
+  .shipment-row { display: flex; flex-direction: column; gap: 8px; }
+  .shipment-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-radius: var(--radius-sm); background: var(--off-white); border: 1px solid var(--border);
+  }
+  .shipment-id { font-size: 12px; font-weight: 700; color: var(--text-primary); }
+  .shipment-origin { font-size: 11px; color: var(--text-muted); }
+  .status-pill { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; }
+  .status-clear { background: var(--green-light); color: var(--green); }
+  .status-transit { background: var(--accent-light); color: var(--accent); }
+  .status-review { background: #fef3c7; color: #b45309; }
+  /* floating badges */
+  .hero-float {
+    position: absolute; background: rgba(255,255,255,.96); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 10px 16px; box-shadow: var(--shadow-sm);
+    display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; color: var(--text-primary);
+    animation: float 6s ease-in-out infinite;
+  }
+  .hero-float-label {
+    min-width: 28px; height: 28px; padding: 0 8px; border-radius: 999px; background: var(--accent-light); border: 1px solid var(--accent-subtle);
+    display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--accent);
+  }
+  .hero-float.f1 { top: -16px; right: 30px; animation-delay: 0s; }
+  .hero-float.f2 { bottom: 20px; left: -20px; animation-delay: 1.5s; }
+  .hero-float-icon { font-size: 18px; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+  /* ─── TRUST / STATS ─── */
+  #trust { background: var(--off-white); padding: 80px 5%; }
+  .logos-track-wrapper { overflow: hidden; position: relative; margin: 40px 0; }
+  .logos-track-wrapper::before, .logos-track-wrapper::after {
+    content: ''; position: absolute; top: 0; bottom: 0; width: 80px; z-index: 2; pointer-events: none;
+  }
+  .logos-track-wrapper::before { left: 0; background: linear-gradient(to right, var(--off-white), transparent); }
+  .logos-track-wrapper::after { right: 0; background: linear-gradient(to left, var(--off-white), transparent); }
+  .logos-track { display: flex; gap: 48px; width: max-content; animation: scroll-x 22s linear infinite; }
+  .logos-track:hover { animation-play-state: paused; }
+  .logo-item {
+    height: 40px; padding: 0 20px; background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: var(--text-muted); white-space: nowrap; min-width: 120px;
+    transition: box-shadow .2s;
+  }
+  .logo-item:hover { box-shadow: var(--shadow-sm); color: var(--text-primary); }
+  @keyframes scroll-x { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .stats-frame {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--border); border-radius: var(--radius-lg);
+    background: var(--white); overflow: hidden; box-shadow: var(--shadow-sm);
+  }
+  .stat-item {
+    padding: 32px 28px; text-align: center; border-right: 1px solid var(--border);
+    transition: background var(--transition);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-item:hover { background: var(--accent-light); }
+  .stat-num { font-size: 2.2rem; font-weight: 800; color: var(--accent); line-height: 1; }
+  .stat-desc { font-size: 13px; color: var(--text-muted); margin-top: 6px; font-weight: 500; }
+
+  /* ─── WHY XEMI ─── */
+  #why { background: var(--white); }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .feature-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 28px; display: flex; flex-direction: column; gap: 14px;
+    transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+  }
+  .feature-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); border-color: var(--accent-subtle); }
+  .feature-icon {
+    width: 44px; height: 44px; background: var(--accent-light); border: 1px solid var(--accent-subtle); border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--accent);
+  }
+  .feature-card h3 { font-size: 1.05rem; }
+  .feature-card p { font-size: 14px; line-height: 1.7; }
+  .feature-tag { font-size: 12px; color: var(--text-muted); font-style: italic; }
+  .feature-card-wide { grid-column: span 2; }
+
+  /* ─── CASE STUDIES ─── */
+  #cases { background: var(--bg-light); }
+  .cases-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; }
+  .case-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 32px; display: flex; flex-direction: column; gap: 18px;
+    transition: box-shadow var(--transition), transform var(--transition);
+  }
+  .case-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+  .case-eyebrow { display: flex; align-items: center; gap: 10px; }
+  .case-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); background: var(--accent-light); padding: 4px 12px; border-radius: 100px; }
+  .case-meta { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .case-problem { background: var(--off-white); border-radius: var(--radius-sm); padding: 14px 16px; border-left: 3px solid var(--border); }
+  .case-problem label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); display: block; margin-bottom: 6px; }
+  .case-problem p { font-size: 13px; line-height: 1.65; }
+  .case-result { display: flex; align-items: flex-start; gap: 12px; }
+  .result-icon { font-size: 20px; margin-top: 2px; color: var(--accent); font-weight: 700; }
+  .case-result p { font-size: 13px; }
+  .case-result strong { color: var(--text-primary); }
+
+  /* ─── ICP / STAKEHOLDERS ─── */
+  #icp { background: var(--white); }
+  .icp-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; }
+  .icp-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 32px; display: flex; flex-direction: column; gap: 14px;
+    transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+  }
+  .icp-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); border-color: var(--accent-subtle); }
+  .icp-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-light); border: 1px solid var(--accent-subtle); display:flex; align-items:center; justify-content:center; font-size: 11px; font-weight: 700; color: var(--accent); }
+  .icp-card h3 { font-size: 1.1rem; }
+  .icp-tagline { font-size: 13px; color: var(--text-muted); font-style: italic; }
+
+  /* ─── SUPPORT ─── */
+  #support { background: var(--bg-light); }
+  .support-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+  .support-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 28px; display: flex; flex-direction: column; gap: 12px;
+    transition: box-shadow var(--transition), transform var(--transition);
+  }
+  .support-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+  .support-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-light); border: 1px solid var(--accent-subtle); display:flex; align-items:center; justify-content:center; font-size: 11px; font-weight: 700; color: var(--accent); }
+
+  /* ─── SECURITY ─── */
+  #security { background: var(--white); }
+  .security-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 32px; align-items: center; }
+  .security-features { display: flex; flex-direction: column; gap: 20px; }
+  .sec-item { display: flex; gap: 16px; align-items: flex-start; }
+  .sec-icon { width: 42px; height: 42px; background: var(--accent-light); border: 1px solid var(--accent-subtle); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+  .certs-panel { background: var(--off-white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px; display: flex; flex-direction: column; gap: 20px; }
+  .cert-item { display: flex; align-items: center; gap: 14px; }
+  .cert-badge { width: 44px; height: 44px; background: var(--accent-light); border: 1px solid var(--accent-subtle); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 10px; font-weight: 700; flex-shrink: 0; }
+  .cert-name { font-size: 13px; font-weight: 700; }
+  .cert-desc { font-size: 12px; color: var(--text-muted); }
+  .cert-divider { border: none; border-top: 1px solid var(--border); }
+
+  /* ─── TESTIMONIALS ─── */
+  #testimonials { background: var(--bg-light); }
+  .testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+  .testimonial-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 28px; display: flex; flex-direction: column; gap: 16px;
+    transition: box-shadow var(--transition), transform var(--transition);
+  }
+  .testimonial-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+  .quote-icon { font-size: 28px; color: var(--accent-subtle); line-height: 1; }
+  .testimonial-card p { font-size: 14px; line-height: 1.75; color: var(--text-secondary); flex: 1; }
+  .testimonial-author { display: flex; align-items: center; gap: 12px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .author-avatar {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0;
+  }
+  .author-name { font-weight: 600; font-size: 13px; }
+  .author-role { font-size: 12px; color: var(--text-muted); }
+
+  /* ─── INTEGRATIONS ─── */
+  #integrations { background: var(--white); }
+  .integrations-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; align-items: center; }
+  .integrations-text { display: flex; flex-direction: column; gap: 20px; }
+  .integration-groups { display: flex; flex-direction: column; gap: 16px; }
+  .int-group { background: var(--off-white); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; }
+  .int-group-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: 10px; }
+  .int-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .int-pill { background: var(--white); border: 1px solid var(--border); border-radius: 100px; padding: 4px 12px; font-size: 12px; font-weight: 600; color: var(--text-secondary); transition: border-color .2s, color .2s; }
+  .int-pill:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ─── CTA FINAL ─── */
+  #cta-final {
+    background: linear-gradient(135deg, #0f1a2e 0%, #1a2d50 100%);
+    padding: 96px 5%; text-align: center;
+  }
+  #cta-final .eyebrow { background: rgba(26,86,219,.25); border-color: rgba(26,86,219,.4); }
+  #cta-final h2 { color: #fff; font-size: clamp(1.8rem, 3.5vw, 2.8rem); max-width: 680px; margin: 0 auto; }
+  #cta-final p { color: rgba(255,255,255,.65); max-width: 520px; margin: 0 auto; font-size: 1rem; }
+  .cta-final-inner { display: flex; flex-direction: column; align-items: center; gap: 28px; }
+  .cta-final-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  #cta-final .btn-primary { padding: 13px 28px; font-size: 15px; }
+  .cta-links { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
+  .cta-link { color: rgba(255,255,255,.55); font-size: 14px; font-weight: 500; transition: color .2s; }
+  .cta-link:hover { color: rgba(255,255,255,.9); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: #090f1c; color: rgba(255,255,255,.45); padding: 48px 5% 32px;
+    display: flex; flex-direction: column; gap: 28px;
+  }
+  .footer-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 24px; }
+  .footer-brand { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -.03em; }
+  .footer-brand span { color: var(--accent); }
+  .footer-tagline { font-size: 13px; margin-top: 6px; color: rgba(255,255,255,.4); }
+  .footer-links { display: flex; gap: 48px; flex-wrap: wrap; }
+  .footer-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; font-weight: 700; color: rgba(255,255,255,.6); margin-bottom: 12px; }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .footer-col a { font-size: 13px; color: rgba(255,255,255,.4); transition: color .2s; }
+  .footer-col a:hover { color: rgba(255,255,255,.85); }
+  .footer-divider { border: none; border-top: 1px solid rgba(255,255,255,.08); }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; font-size: 12px; flex-wrap: wrap; gap: 8px; }
+
+  /* ─── SCROLL ANIMATIONS ─── */
+  .fade-up { opacity: 0; transform: translateY(32px); transition: opacity .6s cubic-bezier(.4,0,.2,1), transform .6s cubic-bezier(.4,0,.2,1); }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+  .fade-left { opacity: 0; transform: translateX(-32px); transition: opacity .65s .1s cubic-bezier(.4,0,.2,1), transform .65s .1s cubic-bezier(.4,0,.2,1); }
+  .fade-left.visible { opacity: 1; transform: translateX(0); }
+  .fade-right { opacity: 0; transform: translateX(32px); transition: opacity .65s .1s cubic-bezier(.4,0,.2,1), transform .65s .1s cubic-bezier(.4,0,.2,1); }
+  .fade-right.visible { opacity: 1; transform: translateX(0); }
+  .stagger-child { opacity: 0; transform: translateY(24px); transition: opacity .5s, transform .5s; }
+  .stagger-parent.visible .stagger-child:nth-child(1) { opacity:1; transform:none; transition-delay:.05s; }
+  .stagger-parent.visible .stagger-child:nth-child(2) { opacity:1; transform:none; transition-delay:.12s; }
+  .stagger-parent.visible .stagger-child:nth-child(3) { opacity:1; transform:none; transition-delay:.19s; }
+  .stagger-parent.visible .stagger-child:nth-child(4) { opacity:1; transform:none; transition-delay:.26s; }
+  .stagger-parent.visible .stagger-child:nth-child(5) { opacity:1; transform:none; transition-delay:.33s; }
+  .stagger-parent.visible .stagger-child:nth-child(6) { opacity:1; transform:none; transition-delay:.40s; }
+  .counter-num { transition: none; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .hero-grid, .security-grid, .integrations-layout { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .features-grid, .cases-grid, .icp-grid, .testimonials-grid, .support-grid { grid-template-columns: 1fr; }
+    .feature-card-wide { grid-column: span 1; }
+    .stats-frame { grid-template-columns: repeat(2,1fr); }
+    .stat-item:nth-child(2) { border-right: none; }
+    .stat-item:nth-child(3) { border-right: 1px solid var(--border); }
+    .stat-item { border-bottom: 1px solid var(--border); }
+    .stat-item:nth-child(3), .stat-item:nth-child(4) { border-bottom: none; }
+    nav .nav-links { display: none; }
+  }
+  @media (max-width: 600px) {
+    section { padding: 64px 5%; }
+    .stats-frame { grid-template-columns: 1fr 1fr; }
+    .footer-links { flex-direction: column; gap: 24px; }
+  }
+
+  .hero-float-label, .feature-icon, .icp-icon, .support-icon, .sec-icon, .cert-badge {
+    font-family: var(--font);
+    letter-spacing: .06em;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ░░ NAVBAR ░░ -->
+<nav id="navbar">
+  <a class="nav-logo" href="#">XE<span>MI</span></a>
+  <ul class="nav-links">
+    <li><a href="#why">Platform</a></li>
+    <li><a href="#cases">Case Studies</a></li>
+    <li><a href="#icp">Solutions</a></li>
+    <li><a href="#integrations">Integrations</a></li>
+    <li><a href="#support">Support</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="#" class="btn btn-secondary">Sign In</a>
+    <a href="#" class="btn btn-primary">Request a Demo</a>
+  </div>
+</nav>
+
+<!-- ░░ HERO ░░ -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-left fade-left">
+        <span class="eyebrow">The Intelligent Platform for Global Trade</span>
+        <h1>One Platform for Every Shipment, Document, and Trade Decision</h1>
+        <p class="sub">XEMI connects every shipment, document, workflow, and stakeholder in one intelligent platform, so trade teams move faster, stay compliant, and always know what happens next.<br><strong>One platform. Complete trade intelligence.</strong></p>
+        <div class="hero-ctas">
+          <a href="#" class="btn btn-primary">Request a Demo <span>→</span></a>
+          <a href="#why" class="btn btn-secondary">See How It Works</a>
+        </div>
+      </div>
+      <div class="hero-right fade-right">
+        <div style="position:relative;">
+          <div class="hero-card">
+            <div class="hero-card-header">
+              <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+              <span style="font-size:12px;font-weight:600;color:var(--text-muted);margin-left:8px;">XEMI Live Dashboard</span>
+            </div>
+            <div class="metric-row">
+              <div class="metric-item">
+                <span class="metric-value" data-target="50">0</span><span style="font-size:1.5rem;font-weight:800;color:var(--accent)">K+</span>
+                <span class="metric-label">Shipments Processed</span>
+                <span class="metric-badge">↑ Live</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-value" data-target="330">0</span><span style="font-size:1.5rem;font-weight:800;color:var(--accent)">+</span>
+                <span class="metric-label">Carrier Integrations</span>
+                <span class="metric-badge">Active</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-value" data-target="70">0</span><span style="font-size:1.5rem;font-weight:800;color:var(--accent)">%</span>
+                <span class="metric-label">Less Manual Effort</span>
+                <span class="metric-badge">↓ Saved</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-value" data-target="90">0</span><span style="font-size:1.5rem;font-weight:800;color:var(--accent)">%</span>
+                <span class="metric-label">Faster Turnaround</span>
+                <span class="metric-badge">↑ Speed</span>
+              </div>
+            </div>
+            <div class="shipment-row">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);">Live Shipments</div>
+              <div class="shipment-item">
+                <div><div class="shipment-id">SHP-20041</div><div class="shipment-origin">Shanghai → Mumbai</div></div>
+                <span class="status-pill status-clear">Cleared ✓</span>
+              </div>
+              <div class="shipment-item">
+                <div><div class="shipment-id">SHP-20042</div><div class="shipment-origin">Rotterdam → JNPT</div></div>
+                <span class="status-pill status-transit">In Transit</span>
+              </div>
+              <div class="shipment-item">
+                <div><div class="shipment-id">SHP-20043</div><div class="shipment-origin">Dubai → Chennai</div></div>
+                <span class="status-pill status-review">Doc Review</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-float f1"><span class="hero-float-label">XI</span><span>XI Intelligence Active</span></div>
+          <div class="hero-float f2"><span class="hero-float-label">ISO</span><span>ISO 27001 Secured</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ TRUST ░░ -->
+<section id="trust">
+  <div class="container">
+    <div class="section-header fade-up">
+      <h2>Trusted by Businesses That Keep Global Trade Moving</h2>
+      <p>From pharma importers and electronics exporters to licensed customs brokers and high-volume trade teams, businesses trust XEMI to run complex trade operations faster, with greater control and intelligence.</p>
+    </div>
+    <div class="logos-track-wrapper fade-up">
+      <div class="logos-track" id="logos-track">
+        <div class="logo-item">AlphaVector</div>
+        <div class="logo-item">Ample Graphics</div>
+        <div class="logo-item">Sync Logistics</div>
+        <div class="logo-item">PharmaTrade Co.</div>
+        <div class="logo-item">91 Cycle</div>
+        <div class="logo-item">ChemEx India</div>
+        <div class="logo-item">GlobalFreight</div>
+        <div class="logo-item">TradeLink Ltd.</div>
+        <div class="logo-item">CargoMaster</div>
+        <div class="logo-item">SwiftCHA</div>
+        <div class="logo-item">ExportFirst</div>
+        <div class="logo-item">IndiaLogix</div>
+        <!-- duplicate for infinite loop -->
+        <div class="logo-item">AlphaVector</div>
+        <div class="logo-item">Ample Graphics</div>
+        <div class="logo-item">Sync Logistics</div>
+        <div class="logo-item">PharmaTrade Co.</div>
+        <div class="logo-item">91 Cycle</div>
+        <div class="logo-item">ChemEx India</div>
+        <div class="logo-item">GlobalFreight</div>
+        <div class="logo-item">TradeLink Ltd.</div>
+        <div class="logo-item">CargoMaster</div>
+        <div class="logo-item">SwiftCHA</div>
+        <div class="logo-item">ExportFirst</div>
+        <div class="logo-item">IndiaLogix</div>
+      </div>
+    </div>
+    <div class="stats-frame fade-up">
+      <div class="stat-item"><div class="stat-num counter" data-target="50000" data-suffix="K+">0</div><div class="stat-desc">Shipments processed</div></div>
+      <div class="stat-item"><div class="stat-num counter" data-target="70" data-suffix="%">0</div><div class="stat-desc">Reduction in manual effort</div></div>
+      <div class="stat-item"><div class="stat-num counter" data-target="90" data-suffix="%">0</div><div class="stat-desc">Faster task turnaround</div></div>
+      <div class="stat-item"><div class="stat-num counter" data-target="330" data-suffix="+">0</div><div class="stat-desc">Carrier integrations</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ WHY XEMI ░░ -->
+<section id="why">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="eyebrow">Platform</span>
+      <h2>What Makes XEMI an Intelligent Trade Platform</h2>
+      <p>Built for the complexity of global trade, not retrofitted to it. Every capability connected, every decision informed, and every workflow automated in one operational infrastructure.</p>
+    </div>
+    <div class="features-grid stagger-parent">
+      <div class="feature-card stagger-child">
+        <div class="feature-icon">UV</div>
+        <h3>Unified Visibility</h3>
+        <p>One live view of every shipment, document, process, workflow, stakeholder, and decision across your entire EXIM ecosystem.</p>
+        <span class="feature-tag">No blind spots. No guesswork.</span>
+        <a href="/platform/unified-visibility" class="btn btn-ghost">See Unified Visibility <span class="arrow">→</span></a>
+      </div>
+      <div class="feature-card stagger-child">
+        <div class="feature-icon">EA</div>
+        <h3>End-to-End Automation</h3>
+        <p>From inquiry to quotation, documentation to customs filing, and shipment execution to final clearance, XEMI automates workflows across the entire trade cycle.</p>
+        <span class="feature-tag">Reduce manual effort. Eliminate duplication.</span>
+        <a href="/platform/customs-automation" class="btn btn-ghost">See Customs Automation <span class="arrow">→</span></a>
+      </div>
+      <div class="feature-card stagger-child">
+        <div class="feature-icon">XI</div>
+        <h3>XI — XEMI Intelligence</h3>
+        <p>The AI brain behind every trade decision. Go beyond documents with intelligence built for process execution, compliance, regulation, and operational productivity.</p>
+        <span class="feature-tag">Drive more predictively. Proactive decision-making.</span>
+        <a href="/platform/xi-intelligence" class="btn btn-ghost">Explore XI Intelligence <span class="arrow">→</span></a>
+      </div>
+      <div class="feature-card feature-card-wide stagger-child">
+        <div class="feature-icon">DI</div>
+        <h3>Deep Integrations</h3>
+        <p>Unify data from ERPs, customs portals, global carriers, and other critical trade systems into one intelligent, actionable dashboard. Deliver the right data to the right person at the right time.</p>
+        <a href="/platform/document-intelligence" class="btn btn-ghost">See Document Intelligence <span class="arrow">→</span></a>
+      </div>
+      <div class="feature-card stagger-child">
+        <div class="feature-icon">FC</div>
+        <h3>Finance & Cost Automation</h3>
+        <p>Every cost — freight, duty, IGST, port charges, CHA fees — extracted by AI, automatically categorized, and visible at shipment, invoice, and product levels in real time.</p>
+        <span class="feature-tag">Total landed cost. Zero manual reconciliation.</span>
+        <a href="/platform/document-intelligence" class="btn btn-ghost">See Finance Automation <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ CASE STUDIES ░░ -->
+<section id="cases">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="eyebrow">Case Studies</span>
+      <h2>Real Teams. Real Trade. Real Outcomes.</h2>
+    </div>
+    <div class="cases-grid stagger-parent">
+      <div class="case-card stagger-child">
+        <div class="case-eyebrow"><span class="case-type">Importer</span></div>
+        <p class="case-meta">Mid-sized pharmaceutical manufacturer, Mumbai · 80+ import shipments/month across 6 origins</p>
+        <div class="case-problem">
+          <label>The Problem</label>
+          <p>Demurrage charges hitting ₹4–6 lakh every month. Document errors discovered only after containers reached port. Ops team spending 2 hours each morning across five portals assembling an already-outdated picture.</p>
+        </div>
+        <div class="case-result">
+          <span class="result-icon">—</span>
+          <p>XEMI's AI caught discrepancies before filing. Free-day countdowns and demurrage alerts gave the team time to act. <strong>₹0 avoidable demurrage in six months following go-live.</strong></p>
+        </div>
+      </div>
+      <div class="case-card stagger-child">
+        <div class="case-eyebrow"><span class="case-type">CHA Firm</span></div>
+        <p class="case-meta">Licensed customs house agent, JNPT · Managing 40+ importer accounts, 300+ jobs/month</p>
+        <div class="case-problem">
+          <label>The Problem</label>
+          <p>Every job took 75 minutes of operator time — data entry, HSN lookup, eSanchit upload, ICEGATE navigation. Could not onboard new clients without hiring. Flat file rejections at 5pm daily.</p>
+        </div>
+        <div class="case-result">
+          <span class="result-icon">—</span>
+          <p>XEMI automated job creation, HSN classification, and ICEGATE filing. <strong>The same job now takes 11 minutes. One operator handles what previously required three.</strong></p>
+        </div>
+      </div>
+      <div class="case-card stagger-child">
+        <div class="case-eyebrow"><span class="case-type">Exporter</span></div>
+        <p class="case-meta">Chemical exporter, Ahmedabad · 120+ Shipping Bills/month · Active EPCG and RoDTEP obligations</p>
+        <div class="case-problem">
+          <label>The Problem</label>
+          <p>Duty drawback filed late or not at all. EPCG utilization tracked on a spreadsheet three weeks behind. A compliance notice from DGFT revealed how exposed the team was.</p>
+        </div>
+        <div class="case-result">
+          <span class="result-icon">—</span>
+          <p>XEMI identified eligible drawbacks on every shipment automatically. <strong>₹38 lakh in duty drawback recovered in the first four months. Zero DGFT compliance breaches since.</strong></p>
+        </div>
+      </div>
+      <div class="case-card stagger-child">
+        <div class="case-eyebrow"><span class="case-type">Freight Forwarder</span></div>
+        <p class="case-meta">Mid-market freight forwarding firm, Delhi · 200+ active shipments/month across India-Middle East & India-Europe lanes</p>
+        <div class="case-problem">
+          <label>The Problem</label>
+          <p>90 minutes every morning pulling status from eight carrier portals. Clients calling constantly for updates. CHA coordination entirely over WhatsApp — no audit trail, no structure.</p>
+        </div>
+        <div class="case-result">
+          <span class="result-icon">—</span>
+          <p>Consolidated carrier data into one live dashboard. Client self-serve visibility portals. <strong>Morning data assembly dropped from 90 minutes to under 10. Client status calls stopped within the first month.</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ ICP / STAKEHOLDERS ░░ -->
+<section id="icp">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="eyebrow">Solutions</span>
+      <h2>Built for Every Stakeholder in Global Trade</h2>
+      <p>Global trade is never managed in silos. XEMI provides importers, exporters, customs brokers, and freight forwarders with purpose-built workflows on a shared, intelligent platform.</p>
+    </div>
+    <div class="icp-grid stagger-parent">
+      <div class="icp-card stagger-child">
+        <span class="icp-icon">IM</span>
+        <h3>Importers</h3>
+        <p><strong>Gain complete control over inbound operations from PO to GRN.</strong></p>
+        <p>Reduce port surprises, prevent document errors, manage clearance operations, control landed costs, and stay ahead of demurrage with AI validation, live milestone visibility, and ERP sync.</p>
+        <p class="icp-tagline">Know what is arriving, what is delayed, what is missing, and what it will cost — before it becomes a problem.</p>
+        <a href="/importers" class="btn btn-ghost">Explore Importers <span class="arrow">→</span></a>
+      </div>
+      <div class="icp-card stagger-child">
+        <span class="icp-icon">EX</span>
+        <h3>Exporters</h3>
+        <p><strong>Move faster with compliant, profitable exports.</strong></p>
+        <p>Automate filings, identify incentive and FTA opportunities, reduce documentation errors, improve buyer visibility, and manage shipping milestones faster and with greater confidence.</p>
+        <p class="icp-tagline">Ship faster, stay compliant, and capture more value from every export transaction.</p>
+        <a href="/exporters" class="btn btn-ghost">Explore Exporters <span class="arrow">→</span></a>
+      </div>
+      <div class="icp-card stagger-child">
+        <span class="icp-icon">CB</span>
+        <h3>Customs Brokers</h3>
+        <p><strong>Manage more clients and more shipments without adding overhead.</strong></p>
+        <p>Automate document handling, speed up customs filing, improve client communication, track SLAs, and run a more scalable, profitable business.</p>
+        <p class="icp-tagline">Process more shipments, serve more clients, and improve turnaround without growing operational chaos.</p>
+        <a href="/customs-brokers" class="btn btn-ghost">Explore CHAs <span class="arrow">→</span></a>
+      </div>
+      <div class="icp-card stagger-child">
+        <span class="icp-icon">FF</span>
+        <h3>Freight Forwarders</h3>
+        <p><strong>Scale freight operations without losing control.</strong></p>
+        <p>Unify shipment tracking, automate documentation, improve customer visibility, monitor job profitability, and coordinate teams across modes, milestones, and customers from one platform.</p>
+        <p class="icp-tagline">Run a more connected forwarding operation with better visibility, better service, and stronger margin control.</p>
+        <a href="/freight-forwarders" class="btn btn-ghost">Explore Forwarders <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ SUPPORT ░░ -->
+<section id="support">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="eyebrow">Customer Service & Support</span>
+      <h2>Trade Never Stops. Neither Do We.</h2>
+      <p>XEMI delivers dedicated, always-on support built for the realities of global trade. 24×7 assistance, dedicated Relationship Managers, and a service designed for time-critical operations.</p>
+    </div>
+    <div class="support-grid stagger-parent">
+      <div class="support-card stagger-child">
+        <span class="support-icon">RM</span>
+        <h3>Your Dedicated Relationship Manager</h3>
+        <p>One point of contact who understands your business, document formats, workflows, and trade priorities. Available across WhatsApp, email, and phone for faster resolution and better continuity.</p>
+      </div>
+      <div class="support-card stagger-child">
+        <span class="support-icon">24</span>
+        <h3>24×7 Support Across Every Channel</h3>
+        <p>Global trade does not operate on office hours, and neither does XEMI support. Whether it's an urgent customs issue, a filing question, or an operational exception, our team is available when timing matters most.</p>
+      </div>
+      <div class="support-card stagger-child">
+        <span class="support-icon">SL</span>
+        <h3>Built for High-Volume, Time-Critical Operations</h3>
+        <p>Whether you are clearing a shipment at midnight or managing a vessel cutoff, XEMI support is structured for the urgency that global trade demands — not standard software response times.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ SECURITY ░░ -->
+<section id="security">
+  <div class="container">
+    <div class="security-grid">
+      <div class="fade-left">
+        <div style="display:flex;flex-direction:column;gap:20px;margin-bottom:32px;">
+          <span class="eyebrow">Security</span>
+          <h2>Enterprise-Grade Security. Built In From Day One.</h2>
+          <p>Trade data is sensitive. We treat it that way.</p>
+        </div>
+        <div class="security-features">
+          <div class="sec-item">
+            <div class="sec-icon">EN</div>
+            <div>
+              <h3>Enterprise-Grade Encryption</h3>
+              <p style="font-size:14px;margin-top:4px;">All data encrypted in transit and at rest. 256-bit AES encryption across every API call, document, and workflow.</p>
+            </div>
+          </div>
+          <div class="sec-item">
+            <div class="sec-icon">AL</div>
+            <div>
+              <h3>Access Controls & Audit Logs</h3>
+              <p style="font-size:14px;margin-top:4px;">Role-based access controls, full audit logging, and complete decision traceability on every trade action taken in the platform.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="certs-panel fade-right">
+        <h3 style="font-size:1rem;font-weight:700;">Certifications & Compliance</h3>
+        <div class="cert-item">
+          <div class="cert-badge">ISO</div>
+          <div>
+            <div class="cert-name">ISO 27001 Certified</div>
+            <div class="cert-desc">Security practices aligned with the globally recognized standard for information security management.</div>
+          </div>
+        </div>
+        <hr class="cert-divider" />
+        <div class="cert-item">
+          <div class="cert-badge">GD</div>
+          <div>
+            <div class="cert-name">GDPR Aligned</div>
+            <div class="cert-desc">Privacy controls designed to support compliance with major international data protection frameworks.</div>
+          </div>
+        </div>
+        <hr class="cert-divider" />
+        <div class="cert-item">
+          <div class="cert-badge">SC</div>
+          <div>
+            <div class="cert-name">PDPA & SOC 2 Type II Aligned</div>
+            <div class="cert-desc">Comprehensive security and privacy controls verified against international compliance standards.</div>
+          </div>
+        </div>
+        <hr class="cert-divider" />
+        <div style="background:var(--accent-light);border:1px solid var(--accent-subtle);border-radius:var(--radius-sm);padding:14px 16px;display:flex;gap:10px;align-items:flex-start;">
+          <span style="font-size:14px;font-weight:700;color:var(--accent);">SEC</span>
+          <p style="font-size:13px;">Your trade data is encrypted, controlled, audited, and protected by internationally certified security practices.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ TESTIMONIALS ░░ -->
+<section id="testimonials">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="eyebrow">Testimonials</span>
+      <h2>What Our Customers Say</h2>
+    </div>
+    <div class="testimonials-grid stagger-parent">
+      <div class="testimonial-card stagger-child">
+        <div class="quote-icon">"</div>
+        <p>We love XEMI for its ease of use. It has transformed our complex import process into a simple, easy-to-track system with full visibility until the goods arrive at the warehouse. This helps our supply team manage inventory and customer deliveries more effectively.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">PR</div>
+          <div><div class="author-name">Parmatma Rai</div><div class="author-role">AlphaVector India — 91 Cycle, Importer</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card stagger-child">
+        <div class="quote-icon">"</div>
+        <p>We have been using XEMI for several months to track our import shipments, and it has proven extremely reliable. It has significantly reduced the time and effort previously required for manual data collection from various shipping lines, providing concise relevant information and helping save manpower.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">RJ</div>
+          <div><div class="author-name">Rajeev Jagga</div><div class="author-role">Ample Graphics, Importer</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card stagger-child">
+        <div class="quote-icon">"</div>
+        <p>What sets XEMI apart is its intuitive, user-friendly interface which seamlessly integrates information flow and document management into a cohesive, streamlined process. The true game-changer is XEMI's advanced AI capabilities which automate tracking, providing real-time updates and eliminating manual intervention.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">DS</div>
+          <div><div class="author-name">Dharmil Sheth</div><div class="author-role">Sync Logistics, Customs Broker</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ INTEGRATIONS ░░ -->
+<section id="integrations">
+  <div class="container">
+    <div class="integrations-layout">
+      <div class="integrations-text fade-left">
+        <span class="eyebrow">Integrations</span>
+        <h2>Plug In Everywhere Your Trade Runs</h2>
+        <p>XEMI connects to the customs authorities, carriers, ERPs, and trade portals your business already depends on. <strong>330+ live integrations. Ready from day one.</strong></p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;">
+          <a href="#" class="btn btn-primary">Request a Demo →</a>
+          <a href="#why" class="btn btn-secondary">See the Platform</a>
+        </div>
+      </div>
+      <div class="integration-groups fade-right">
+        <div class="int-group">
+          <div class="int-group-label"> Government Authorities</div>
+          <div class="int-pills">
+            <span class="int-pill">ICEGATE</span>
+            <span class="int-pill">DGFT</span>
+            <span class="int-pill">GST</span>
+            <span class="int-pill">ULIP</span>
+            <span class="int-pill">E-Way Bill</span>
+            <span class="int-pill">+ more</span>
+          </div>
+        </div>
+        <div class="int-group">
+          <div class="int-group-label"> Global Carriers (350+)</div>
+          <div class="int-pills">
+            <span class="int-pill">Maersk</span>
+            <span class="int-pill">MSC</span>
+            <span class="int-pill">CMA CGM</span>
+            <span class="int-pill">COSCO</span>
+            <span class="int-pill">Evergreen</span>
+            <span class="int-pill">Hapag-Lloyd</span>
+            <span class="int-pill">DHL</span>
+            <span class="int-pill">FedEx</span>
+            <span class="int-pill">UPS</span>
+            <span class="int-pill">Air India</span>
+            <span class="int-pill">+ more</span>
+          </div>
+        </div>
+        <div class="int-group">
+          <div class="int-group-label">🏢 Enterprise ERP & CRM</div>
+          <div class="int-pills">
+            <span class="int-pill">SAP</span>
+            <span class="int-pill">Oracle</span>
+            <span class="int-pill">Microsoft Dynamics</span>
+            <span class="int-pill">REST API</span>
+            <span class="int-pill">Webhooks</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ CTA FINAL ░░ -->
+<section id="cta-final">
+  <div class="container">
+    <div class="cta-final-inner fade-up">
+      <span class="eyebrow">Get Started</span>
+      <h2>Your Trade Operation. Fully Connected. Fully Intelligent.</h2>
+      <p>Every shipment is visible. Every document validated. Every workflow automated. This is what global trade looks like on XEMI.</p>
+      <div class="cta-final-actions">
+        <a href="#" class="btn btn-primary">Request a Demo →</a>
+        <a href="#why" class="btn btn-secondary" style="border-color:rgba(255,255,255,.25);color:#fff;background:rgba(255,255,255,.1);">See the Platform</a>
+      </div>
+      <div class="cta-links">
+        <a href="/importers" class="cta-link">Importers</a>
+        <a href="/exporters" class="cta-link">Exporters</a>
+        <a href="/customs-brokers" class="cta-link">Customs Brokers</a>
+        <a href="/freight-forwarders" class="cta-link">Freight Forwarders</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ FOOTER ░░ -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand">XE<span>MI</span></div>
+      <div class="footer-tagline">The Intelligent Platform for Global Trade</div>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="#">Unified Visibility</a></li>
+          <li><a href="#">End-to-End Automation</a></li>
+          <li><a href="#">XI Intelligence</a></li>
+          <li><a href="#">Deep Integrations</a></li>
+          <li><a href="#">Finance Automation</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Solutions</h4>
+        <ul>
+          <li><a href="#">Importers</a></li>
+          <li><a href="#">Exporters</a></li>
+          <li><a href="#">Customs Brokers</a></li>
+          <li><a href="#">Freight Forwarders</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Case Studies</a></li>
+          <li><a href="#">Security</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <hr class="footer-divider" />
+  <div class="footer-bottom">
+    <span>© 2024 XEMI. All rights reserved.</span>
+    <div style="display:flex;gap:20px;">
+      <a href="#" style="color:rgba(255,255,255,.4);font-size:12px;transition:color .2s;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.4)'">Privacy Policy</a>
+      <a href="#" style="color:rgba(255,255,255,.4);font-size:12px;transition:color .2s;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.4)'">Terms of Use</a>
+      <a href="#" style="color:rgba(255,255,255,.4);font-size:12px;transition:color .2s;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.4)'">Security</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ░░ JAVASCRIPT ░░ -->
+<script>
+// ── Navbar scroll shadow
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 10);
+});
+
+// ── Intersection Observer for scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.fade-up, .fade-left, .fade-right, .stagger-parent').forEach(el => observer.observe(el));
+
+// ── Counter animation
+function animateCounter(el) {
+  const target = parseInt(el.getAttribute('data-target'));
+  const suffix = el.getAttribute('data-suffix') || '';
+  const duration = 1800;
+  const start = performance.now();
+  const isLarge = target >= 1000;
+
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(eased * target);
+    if (isLarge) {
+      el.textContent = Math.round(current / 1000) + suffix;
+    } else {
+      el.textContent = current + suffix;
+    }
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCounter(entry.target);
+      counterObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+
+// ── Hero card number counter
+function animateHeroNum(el) {
+  const target = parseInt(el.getAttribute('data-target'));
+  const duration = 1600;
+  const start = performance.now();
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(eased * target);
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+const heroNumObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateHeroNum(entry.target);
+      heroNumObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.metric-value[data-target]').forEach(el => heroNumObserver.observe(el));
+
+// ── Smooth active nav link highlight on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(sec => {
+    if (window.scrollY >= sec.offsetTop - 100) current = sec.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? 'var(--text-primary)' : '';
+    a.style.fontWeight = a.getAttribute('href') === '#' + current ? '600' : '';
+  });
+}, { passive: true });
+</script>
+</body>
+</html>
